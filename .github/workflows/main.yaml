@@ -29,7 +29,7 @@ jobs:
       - name: Build && Push DockerHub
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
-          context: ks-install
+          context: "{{defaultContext}}:ks-install"
           push: true
           tags: ${{ env.DOCKER_HUB_NAMESPACE }}/${{ env.PRO_NAME }}:${{ env.PRO_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
