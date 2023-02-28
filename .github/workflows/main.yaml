@@ -1,0 +1,36 @@
+name: Publish page
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-18.04
+    env:
+      # 配置环境变量，包括镜像的名称，版本号，还有命名空间
+      PRO_NAME: alinesno-platform-press
+      PRO_VERSION: 3.3.1.${{ github.run_number }}
+      DOCKER_HUB_NAMESPACE: luoandong
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      # -->>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 部署到docker-hub _start >>>>>>>>>>>>>>>>>>>>>>>>>>
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ env.DOCKER_HUB_NAMESPACE }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build && Push DockerHub
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: ks-install
+          push: true
+          tags: ${{ env.DOCKER_HUB_NAMESPACE }}/${{ env.PRO_NAME }}:${{ env.PRO_VERSION }}
+          labels: ${{ steps.meta.outputs.labels }}
+            # -->>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 部署到docker-hub _end >>>>>>>>>>>>>>>>>>>>>>>>>>
